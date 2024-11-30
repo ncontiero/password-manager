@@ -13,7 +13,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-  "cryptography==43.0.3",
+  "cryptography==44.0.0",
 ]
 scripts.start = "password_manager:main"
 
