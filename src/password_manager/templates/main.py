@@ -124,12 +124,13 @@ class UI:
                     print(SEPARATOR)
                     print(
                         f"{YELLOW}Your master password has been created,",
-                        "save it carefully because if you lose it you won't be able to recover your passwords.{RESET}",
+                        f"save it carefully because if you lose it you won't be able to recover your passwords.{RESET}",
                     )
                     print(f"{GREEN}Master password: {master_password.decode('utf-8')}{RESET}")
                     if path:
                         print(
-                            f"{YELLOW}Master password saved in file, remember to remove the file after transferring it.{RESET}",
+                            f"{YELLOW}Master password saved in file",
+                            f"remember to remove the file after transferring it.{RESET}",
                         )
                         print(f"{BLUE}Path: {path}{RESET}")
                     print(SEPARATOR)
