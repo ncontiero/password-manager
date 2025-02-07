@@ -1,5 +1,10 @@
-from .templates.main import main_template
+from .main import password_manager
+from .manage import manage as main_manage
 
 
 def main() -> None:
-    main_template()
+    password_manager()
+
+
+def manage() -> None:
+    main_manage()

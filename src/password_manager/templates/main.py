@@ -1,48 +1,94 @@
-from password_manager.models.password import Password
-from password_manager.views.password import FernetHasher
+from password_manager.models.database import engine
+from password_manager.models.model import Password
+from password_manager.views.hasher import FernetHasher
+from password_manager.views.password import PasswordService
 
 
-def main_template() -> None:
-    action = input("Type 1 to save a new password, type 2 to view existing passwords: ")
+class UI:
+    def __init__(self) -> None:
+        self.password_service = PasswordService(engine)
 
-    match action:
-        case "1":
-            domain = input("Enter the domain: ")
-            password_input = input("Enter the password: ")
+    def add_password(self) -> None:
+        domain = input("Enter the domain: ")
 
-            password = Password(domain, password_input)
-            key: str | bytes
+        if self.password_service.get(domain=domain) is not None:
+            print("Password already exists for this domain")
+            return
 
-            if len(password.get_all()) == 0:
-                key, path = FernetHasher.create_key(archive=True)
-                print(
-                    "Your key has been created,",
-                    "save it carefully because if you lose it you won't be able to recover your passwords",
-                )
-                print(f"Key: {key.decode('utf-8')}")
-                if path:
-                    print("Key saved in file, remember to remove the file after transferring it")
-                    print(f"Path: {path}")
-            else:
-                key = input("Enter your encryption key, always use the same key: ")
+        password_input = input("Enter the password: ")
 
-            fernet = FernetHasher(key)
-            password = Password(domain, fernet.encrypt(password_input).decode("utf-8"))
-            password.save()
+        key: str | bytes
 
-            print("Password saved")
-        case "2":
-            domain = input("Enter the domain: ")
-            key = input("Enter your encryption key: ")
+        if len(self.password_service.get_all()) == 0:
+            key, path = FernetHasher.create_key(archive=True)
+            print("\n=====================================\n")
+            print(
+                "Your key has been created,",
+                "save it carefully because if you lose it you won't be able to recover your passwords",
+            )
+            print(f"Key: {key.decode('utf-8')}")
+            if path:
+                print("Key saved in file, remember to remove the file after transferring it")
+                print(f"Path: {path}")
+            print("\n=====================================\n")
+        else:
+            key = input("Enter your encryption key, always use the same key: ")
 
-            fernet = FernetHasher(key)
-            data = Password.get(domain=domain)
-            if data is None:
-                print("No password found for this domain")
-                return
+        fernet = FernetHasher(key)
+        password_input = fernet.encrypt(password_input).decode("utf-8")
+        password = Password(domain=domain, password=password_input)
+        self.password_service.create(password)
 
-            pwd = fernet.decrypt(data["password"])
-            print(f"Password for {domain}: {pwd}")
+        print("Password saved")
 
-        case _:
-            print("Invalid input")
+    def view_password(self) -> None:
+        domain = input("Enter the domain: ")
+        key = input("Enter your encryption key: ")
+
+        fernet = FernetHasher(key)
+        data = self.password_service.get(domain=domain)
+        if data is None:
+            print("No password found for this domain")
+            return
+
+        pwd = fernet.decrypt(data.password)
+        print(f"Password for {domain}: {pwd}")
+
+    def view_all_domains(self) -> None:
+        passwords = self.password_service.get_all()
+        for password in passwords:
+            print(f"Domain: {password.domain}")
+
+    def remove_password(self) -> None:
+        domain = input("Enter the domain: ")
+        password = self.password_service.get(domain=domain)
+
+        if password is None:
+            print("No password found for this domain")
+            return
+
+        self.password_service.delete(password.id)
+        print("Password removed")
+
+    def start(self) -> None:
+        while True:
+            print("""
+            [1] -> Add password
+            [2] -> View password
+            [3] -> View domains
+            [4] -> Remove password
+            [5] -> Exit
+            """)
+            choice = input("Choose an option: ")
+
+            match choice:
+                case "1":
+                    self.add_password()
+                case "2":
+                    self.view_password()
+                case "3":
+                    self.view_all_domains()
+                case "4":
+                    self.remove_password()
+                case _:
+                    break
