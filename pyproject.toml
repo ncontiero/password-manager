@@ -16,8 +16,8 @@ dependencies = [
   "cryptography==44",
   "sqlmodel==0.0.22",
 ]
-scripts.start = "password_manager:main"
 scripts.manage = "password_manager:manage"
+scripts.start = "password_manager:main"
 
 [tool.ruff]
 target-version = "py313"
