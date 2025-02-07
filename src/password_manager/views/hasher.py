@@ -79,6 +79,22 @@ class FernetHasher:
         return "".join(secrets.choice(cls.RANDOM_STRING_CHARS) for _ in range(length))
 
     @classmethod
+    def make_key(cls, value: str | bytes) -> bytes:
+        """
+        Create a key from a given string.
+
+        Args:
+            value (str): The string to use for key generation
+
+        Returns:
+            bytes: The generated key as bytes
+        """
+        if isinstance(value, str):
+            value = value.encode("utf-8")
+        hasher = hashlib.sha256(value).digest()
+        return base64.b64encode(hasher)
+
+    @classmethod
     def create_key(cls, archive: bool = False) -> tuple[bytes, str | None]:
         """
         Create a new Fernet encryption key.
@@ -94,9 +110,7 @@ class FernetHasher:
         Raises:
             IOError: If key archiving fails
         """
-        value = cls._get_random_string()
-        hasher = hashlib.sha256(value.encode("utf-8")).digest()
-        key = base64.b64encode(hasher)
+        key = cls.make_key(cls._get_random_string())
 
         if archive:
             try:
