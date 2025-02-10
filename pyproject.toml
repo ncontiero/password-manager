@@ -13,7 +13,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-  "cryptography==44",
+  "cryptography==44.0.0",
   "sqlmodel==0.0.22",
 ]
 scripts.manage = "password_manager:manage"
@@ -32,6 +32,9 @@ lint.ignore = [
   "G004",   # Allow using f-strings when logging
   "T201",   # This is a cli
 ]
+
+[tool.pyproject-fmt]
+keep_full_version = true
 
 [tool.mypy]
 strict = true
