@@ -14,7 +14,7 @@ classifiers = [
 ]
 dependencies = [
   "cryptography==44.0.2",
-  "sqlmodel==0.0.23",
+  "sqlmodel==0.0.24",
 ]
 scripts.manage = "password_manager:manage"
 scripts.start = "password_manager:main"
