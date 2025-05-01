@@ -5,7 +5,7 @@ requires = [ "hatchling" ]
 [project]
 name = "password-manager"
 version = "1.0.0"
-requires-python = ">=3.12,<3.14"
+requires-python = ">=3.13.3,<3.14"
 classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
